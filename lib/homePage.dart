@@ -19,6 +19,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late final _messageHandler;
   late final _edit = TextEditingController();
   late final _connectionStateChangedListener;
+  late final _presenceManager;
 
   final _receiver = 'mattias2';
   final _user = 'mattias';
@@ -40,27 +41,34 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[],
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                  //TODO: Add messages here.
+                  ),
+            ),
+            SizedBox(height: 20.0),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                      padding: const EdgeInsets.all(2.0),
+                      margin: const EdgeInsets.only(left: 40.0),
+                      child: TextField(
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Send a message...',
+                          ),
+                          controller: _edit)),
+                ),
+                FloatingActionButton(
+                  onPressed: _sendMessage,
+                  tooltip: 'Send',
+                  child: Icon(Icons.send),
+                ),
+              ],
+            ),
+          ],
         ),
-      ),
-      floatingActionButton: Row(
-        children: [
-          Expanded(
-            child: Container(
-                padding: const EdgeInsets.all(2.0),
-                margin: const EdgeInsets.only(left: 40.0),
-                child: TextField(
-                    decoration: InputDecoration.collapsed(
-                      hintText: 'Send a message...',
-                    ),
-                    controller: _edit)),
-          ),
-          FloatingActionButton(
-            onPressed: _sendMessage,
-            tooltip: 'Send',
-            child: Icon(Icons.send),
-          ),
-        ],
       ),
     );
   }
@@ -80,11 +88,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _connectionStateChangedListener = ConnectionStateChangedListener(
         connection, messagesListener, '$_receiver@$_domain');
 
-    final presenceManager = xmpp.PresenceManager.getInstance(connection);
+    _presenceManager = xmpp.PresenceManager.getInstance(connection);
 
-    presenceManager.subscriptionStream.listen((streamEvent) {
+    _presenceManager.subscriptionStream.listen((streamEvent) {
       if (streamEvent.type == xmpp.SubscriptionEventType.REQUEST) {
-        presenceManager.acceptSubscription(streamEvent.jid);
+        _presenceManager.acceptSubscription(streamEvent.jid);
       }
     });
 
