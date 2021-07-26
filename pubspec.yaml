@@ -12,7 +12,15 @@ dependencies:
   flutter:
     sdk: flutter  
   cupertino_icons: ^1.0.2
-  xmpp_stone: ^0.3.3
+  flutter_bloc: ^7.0.1
+  formz: ^0.4.0
+  equatable: ^2.0.0
+  authentication_repository:
+    path: packages/authentication_repository
+  user_repository:
+    path: packages/user_repository
+  xmpp_communication:
+    path: packages/xmpp_communication
 
 dev_dependencies:
   flutter_test:
