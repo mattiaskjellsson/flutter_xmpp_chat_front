@@ -116,24 +116,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   _sendMessage() {
-    // if (edit.text.isNotEmpty) {
-    //   _xmpp.sendMessage(edit.text);
-    // }
-    //   if (edit.text.isNotEmpty) {
-    //     final m = {
-    //       "id": socket.id,
-    //       "timestamp": DateTime.now().millisecondsSinceEpoch,
-    //       'message': edit.text
-    //     };
-
-    //     socket.emit('send_message', json.encode(m));
-    //     this.setState(() => messages.add(m));
-    //     edit.text = '';
-    //     scroll.animateTo(
-    //       scroll.position.maxScrollExtent,
-    //       duration: Duration(milliseconds: 600),
-    //       curve: Curves.ease,
-    //     );
-    //   }
+    if (edit.text.isNotEmpty) {
+      final messageBloc = BlocProvider.of<MessagesBloc>(context);
+      messageBloc.send(edit.text);
+    }
   }
 }

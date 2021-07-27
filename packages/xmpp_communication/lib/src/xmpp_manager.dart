@@ -24,8 +24,8 @@ class XmppManager {
 
     final messagesListener = MessagesListener();
 
-    _connectionStateChangedListener = ConnectionStateChangedListener(
-        connection, messagesListener, '$receiver@$domain');
+    _connectionStateChangedListener =
+        ConnectionStateChangedListener(connection, messagesListener, receiver);
 
     _presenceManager = xmpp.PresenceManager.getInstance(connection);
 

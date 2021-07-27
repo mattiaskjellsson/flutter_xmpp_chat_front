@@ -36,7 +36,9 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   authEvents(e) async {
     if (e == AuthenticationStatus.authenticated) {
       final user = await _userRepo.getUser();
-      final receiver = user.username == 'mattias' ? 'mattias2' : 'mattias';
+      final receiver = user.username == 'mattias'
+          ? 'mattias2@127.0.0.1/xmppstone'
+          : 'mattias@127.0.0.1/xmppstone';
       _xmppManager.connect(user.username, user.password, '127.0.0.1', receiver);
 
       _messageStreamSubscription =
@@ -46,6 +48,10 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
 
   messageHandler(Message m) {
     add(NewMessagesEvent(m));
+  }
+
+  send(String message) {
+    _xmppManager.sendMessage(message);
   }
 
   @override

@@ -4,10 +4,6 @@ import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 
-// import 'package:xmpp_communication/xmpp_communication.dart';
-
-const TAG = 'example';
-
 class ConnectionStateChangedListener
     implements xmpp.ConnectionStateChangedListener {
   late final xmpp.Connection _connection;
@@ -39,8 +35,6 @@ class ConnectionStateChangedListener
     print(state);
 
     if (state == xmpp.XmppConnectionState.Ready) {
-      print('Connected');
-
       final vCardManager = xmpp.VCardManager(_connection);
       vCardManager.getSelfVCard().then((vCard) {
         print('Your info ${vCard.buildXmlString()}');
