@@ -6,7 +6,7 @@ import 'dart:async';
 class MessagesListener implements xmpp.MessagesListener {
   final _streamController = StreamController<Message>();
 
-  Stream<Message> get status async* {
+  Stream<Message> get messageStream async* {
     yield* _streamController.stream;
   }
 

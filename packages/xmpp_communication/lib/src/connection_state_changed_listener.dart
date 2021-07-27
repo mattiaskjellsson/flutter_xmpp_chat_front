@@ -18,6 +18,8 @@ class ConnectionStateChangedListener
   late final _messageHandler;
   late final _receiver;
 
+  xmpp.MessagesListener get listener => _messagesListener;
+
   ConnectionStateChangedListener(
     xmpp.Connection connection,
     xmpp.MessagesListener messagesListener,

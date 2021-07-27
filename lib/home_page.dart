@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/authentication/bloc/authentication_bloc.dart';
 import 'package:frontend/authentication/bloc/authentication_event.dart';
-import 'package:xmpp_communication/xmpp_communication.dart';
+import 'package:frontend/messages/bloc/messages_bloc.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -20,15 +20,12 @@ class _HomePageState extends State<HomePage> {
   late double width;
   late TextEditingController edit;
   late ScrollController scroll;
-  late XmppManager _xmpp;
-  late bool _connected;
 
   @override
   initState() {
-    _connected = false;
     scroll = new ScrollController();
     edit = new TextEditingController();
-    _xmpp = XmppManager();
+
     super.initState();
   }
 
@@ -36,12 +33,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    if (!_connected) {
-      final u = context.select((AuthenticationBloc bloc) => bloc.state.user);
-      final receiver = u.username == 'mattias' ? 'mattias2' : 'mattias';
-      _xmpp.connect(u.username, u.password, '127.0.0.1', receiver);
-      _connected = true;
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Home'), actions: <Widget>[
@@ -72,7 +63,20 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             Expanded(
-              child: Container(),
+              child: BlocBuilder<MessagesBloc, MessagesState>(
+                bloc: BlocProvider.of<MessagesBloc>(context),
+                builder: (context, state) {
+                  return Container(
+                    child: ListView.builder(
+                      controller: scroll,
+                      itemCount: state.messages.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return buildSingleMessage(state.messages[index]);
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
             Row(
               children: [
@@ -101,10 +105,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  buildSingleMessage(message) {
+    return Column(
+      children: [
+        Text(message.body),
+        Text(message.from),
+        SizedBox(height: 10.0),
+      ],
+    );
+  }
+
   _sendMessage() {
-    if (edit.text.isNotEmpty) {
-      _xmpp.sendMessage(edit.text);
-    }
+    // if (edit.text.isNotEmpty) {
+    //   _xmpp.sendMessage(edit.text);
+    // }
     //   if (edit.text.isNotEmpty) {
     //     final m = {
     //       "id": socket.id,

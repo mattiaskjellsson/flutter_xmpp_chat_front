@@ -3,4 +3,3 @@ export './bloc/login_event.dart';
 export './bloc/login_state.dart';
 
 export './models/models.dart';
-export './view/view.dart';

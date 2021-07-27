@@ -9,6 +9,8 @@ class XmppManager {
   late final _connectionStateChangedListener;
   late final _presenceManager;
 
+  MessagesListener get listener => _connectionStateChangedListener.listener;
+
   connect(String user, String password, String domain, String receiver) {
     final userAtDomain = '$user@$domain';
 
