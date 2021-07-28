@@ -4,6 +4,8 @@ import 'package:frontend/authentication/bloc/authentication_bloc.dart';
 import 'package:frontend/authentication/bloc/authentication_event.dart';
 import 'package:frontend/messages/bloc/messages_bloc.dart';
 
+import 'messages/widgets/messages.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
@@ -62,22 +64,7 @@ class _HomePageState extends State<HomePage> {
                 return Text('UserID: $userId');
               },
             ),
-            Expanded(
-              child: BlocBuilder<MessagesBloc, MessagesState>(
-                bloc: BlocProvider.of<MessagesBloc>(context),
-                builder: (context, state) {
-                  return Container(
-                    child: ListView.builder(
-                      controller: scroll,
-                      itemCount: state.messages.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return buildSingleMessage(state.messages[index]);
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
+            Messages(scroll: scroll),
             Row(
               children: [
                 Container(
@@ -105,20 +92,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  buildSingleMessage(message) {
-    return Column(
-      children: [
-        Text(message.body),
-        Text(message.from),
-        SizedBox(height: 10.0),
-      ],
-    );
-  }
-
   _sendMessage() {
     if (edit.text.isNotEmpty) {
       final messageBloc = BlocProvider.of<MessagesBloc>(context);
       messageBloc.send(edit.text);
+      edit.text = '';
     }
   }
 }

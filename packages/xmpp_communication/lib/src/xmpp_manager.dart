@@ -4,6 +4,7 @@ import 'package:xmpp_communication/xmpp_communication.dart';
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 
 class XmppManager {
+  late final _senderJid;
   late final _receiverJid;
   late final _messageHandler;
   late final _connectionStateChangedListener;
@@ -13,8 +14,8 @@ class XmppManager {
 
   connect(String user, String password, String domain, String receiver) {
     final userAtDomain = '$user@$domain';
-
     final jid = xmpp.Jid.fromFullJid(userAtDomain);
+    _senderJid = jid;
     final account = xmpp.XmppAccountSettings(
         userAtDomain, jid.local, jid.domain, password, 5222,
         resource: 'xmppstone');
@@ -42,6 +43,13 @@ class XmppManager {
   sendMessage(String text) {
     if (text.isNotEmpty) {
       _messageHandler.sendMessage(_receiverJid, text);
+
+      final m = xmpp.MessageStanza('', xmpp.MessageStanzaType.CHAT);
+      m.body = text;
+      m.fromJid = _senderJid;
+      m.toJid = _receiverJid;
+
+      listener.onNewMessage(m);
     }
   }
 
