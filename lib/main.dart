@@ -16,9 +16,11 @@ import 'package:user_repository/user_repository.dart';
 // import 'package:flutter_login/splash/splash.dart';
 
 void main() {
+  final userRepository = UserRepository();
   runApp(MyApp(
-    authenticationRepository: AuthenticationRepository(),
-    userRepository: UserRepository(),
+    authenticationRepository:
+        AuthenticationRepository(userRepository: userRepository),
+    userRepository: userRepository,
     xmppManager: XmppManager(),
   ));
 }

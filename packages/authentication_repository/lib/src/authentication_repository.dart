@@ -4,6 +4,9 @@ enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
 class AuthenticationRepository {
   final _controller = StreamController<AuthenticationStatus>.broadcast();
+  final _userRepository;
+  AuthenticationRepository({required userRepository})
+      : _userRepository = userRepository;
 
   Stream<AuthenticationStatus> get status async* {
     await Future<void>.delayed(const Duration(seconds: 1));
@@ -15,6 +18,8 @@ class AuthenticationRepository {
     required String username,
     required String password,
   }) async {
+    _userRepository.setUser(username);
+
     await Future.delayed(
       const Duration(milliseconds: 300),
       () => _controller.add(AuthenticationStatus.authenticated),
