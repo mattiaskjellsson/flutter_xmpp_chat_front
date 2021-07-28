@@ -32,9 +32,11 @@ class Messsage extends StatelessWidget {
                             message.from,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           )),
+                      SizedBox(height: 5.0),
                       Container(
                           alignment: Alignment.topLeft,
-                          child: Text(message.body)),
+                          child: Text(message.body,
+                              style: TextStyle(fontSize: 16.0))),
                     ],
                   ),
                 ))));
