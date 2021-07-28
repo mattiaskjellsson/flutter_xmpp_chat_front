@@ -37,8 +37,8 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     if (e == AuthenticationStatus.authenticated) {
       final user = await _userRepo.getUser();
       final receiver = user.username == 'mattias'
-          ? 'mattias2@127.0.0.1/xmppstone'
-          : 'mattias@127.0.0.1/xmppstone';
+          ? 'mattias2@shakespeare.lit'
+          : 'mattias@shakespeare.lit';
       _xmppManager.connect(user.username, user.password, '127.0.0.1', receiver);
 
       _messageStreamSubscription =

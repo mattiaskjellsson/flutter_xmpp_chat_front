@@ -35,7 +35,7 @@ class XmppManager {
       }
     });
 
-    _receiverJid = xmpp.Jid.fromFullJid('$receiver@$domain');
+    _receiverJid = xmpp.Jid.fromFullJid(receiver);
     _messageHandler = xmpp.MessageHandler.getInstance(connection);
   }
 
