@@ -2,32 +2,35 @@ import 'dart:async';
 import 'dart:io';
 
 // ignore: import_of_legacy_library_into_null_safe
+import 'package:xmpp_communication/src/message_listner.dart';
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 
 class ConnectionStateChangedListener
     implements xmpp.ConnectionStateChangedListener {
-  late final xmpp.Connection _connection;
-  late final xmpp.MessagesListener _messagesListener;
-  late final StreamSubscription<String> _subscription;
-  late final _presenceManager;
-  late final _rosterManager;
-  late final _messageHandler;
-  late final _receiver;
+  late xmpp.Connection _connection;
+  late MessagesListener _messagesListener;
+  late StreamSubscription<String> _subscription;
+  late xmpp.PresenceManager _presenceManager;
+  late xmpp.RosterManager _rosterManager;
+  late xmpp.MessageHandler _messageHandler;
+  late String _receiver;
 
-  xmpp.MessagesListener get listener => _messagesListener;
+  MessagesListener get listener => _messagesListener;
 
   ConnectionStateChangedListener(
     xmpp.Connection connection,
-    xmpp.MessagesListener messagesListener,
+    MessagesListener messagesListener,
     String receiver,
-  ) {
+  )   : _connection = connection,
+        _messagesListener = messagesListener,
+        _receiver = receiver {
     xmpp.Log.logLevel = xmpp.LogLevel.VERBOSE;
     xmpp.Log.logXmpp = true;
 
-    _connection = connection;
-    _messagesListener = messagesListener;
+    // _connection = connection;
+    // _messagesListener = messagesListener;
+    // _receiver = receiver;
     _connection.connectionStateStream.listen(onConnectionStateChanged);
-    _receiver = receiver;
   }
 
   @override
@@ -35,16 +38,16 @@ class ConnectionStateChangedListener
     print(state);
 
     if (state == xmpp.XmppConnectionState.Ready) {
-      final vCardManager = xmpp.VCardManager(_connection);
-      vCardManager.getSelfVCard().then((vCard) {
-        print('Your info ${vCard.buildXmlString()}');
-      });
+      // final vCardManager = xmpp.VCardManager(_connection);
+      // vCardManager.getSelfVCard().then((vCard) {
+      //   print('Your info ${vCard.buildXmlString()}');
+      // });
 
       _messageHandler = xmpp.MessageHandler.getInstance(_connection);
       _rosterManager = xmpp.RosterManager.getInstance(_connection);
       _messageHandler.messagesStream.listen(_messagesListener.onNewMessage);
 
-      sleep(const Duration(seconds: 1));
+      // sleep(const Duration(seconds: 1));
 
       final receiverJid = xmpp.Jid.fromFullJid(_receiver);
 
@@ -68,8 +71,8 @@ class ConnectionStateChangedListener
     _subscription.cancel();
     _connection.close();
 
-    _presenceManager.close();
-    _rosterManager.dispose();
-    _messageHandler.close();
+    // _presenceManager?.close();
+    // _rosterManager?.dispose();
+    // _messageHandler?.close();
   }
 }
