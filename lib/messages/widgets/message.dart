@@ -11,21 +11,30 @@ class Messsage extends StatelessWidget {
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width * 0.6;
     final a = fromMe ? Alignment.centerRight : Alignment.centerLeft;
-    final c = fromMe ? Colors.blue : Colors.blueAccent;
+    final c = fromMe ? Colors.blueGrey[100] : Colors.blueGrey[50];
     return Container(
         alignment: a,
         child: Padding(
             padding: EdgeInsets.all(8),
             child: Container(
+                decoration: BoxDecoration(
+                  color: c,
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
                 width: w,
-                color: c,
                 child: Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Text(message.body),
-                      Text(message.from),
-                      SizedBox(height: 10.0),
+                      Container(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            message.from,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )),
+                      Container(
+                          alignment: Alignment.topLeft,
+                          child: Text(message.body)),
                     ],
                   ),
                 ))));

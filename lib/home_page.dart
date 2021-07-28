@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         controller: edit)),
                 FloatingActionButton(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: Colors.blue,
                   onPressed: _sendMessage,
                   child: Icon(
                     Icons.send,
