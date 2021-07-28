@@ -19,7 +19,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   final _xmppManager;
   final _authRepo;
 
-  final _messages = [];
+  UserRepository get userRepository => _userRepo;
 
   MessagesBloc({
     required AuthenticationRepository authenticationRepository,

@@ -26,8 +26,8 @@ class _HomePageState extends State<HomePage> {
   @override
   initState() {
     scroll = new ScrollController();
-    edit = new TextEditingController();
 
+    edit = new TextEditingController();
     super.initState();
   }
 
@@ -35,7 +35,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-
+    final user = context.select(
+      (AuthenticationBloc bloc) => bloc.state.user,
+    );
+    final userId = context.select(
+      (AuthenticationBloc bloc) => bloc.state.user.id,
+    );
     return Scaffold(
       appBar: AppBar(title: const Text('Home'), actions: <Widget>[
         ElevatedButton(
@@ -53,18 +58,10 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             Builder(
               builder: (context) {
-                final user = context.select(
-                  (AuthenticationBloc bloc) => bloc.state.user,
-                );
-                print(user);
-                final userId = context.select(
-                  (AuthenticationBloc bloc) => bloc.state.user.id,
-                );
-
                 return Text('UserID: $userId');
               },
             ),
-            Messages(scroll: scroll),
+            Messages(scroll: scroll, me: user.username),
             Row(
               children: [
                 Container(
@@ -97,6 +94,9 @@ class _HomePageState extends State<HomePage> {
       final messageBloc = BlocProvider.of<MessagesBloc>(context);
       messageBloc.send(edit.text);
       edit.text = '';
+      // scroll.animateTo(double.infinity,
+      //     duration: Duration(milliseconds: 300), curve: Curves.bounceIn);
+      // scroll.position.maxScrollExtent;
     }
   }
 }
