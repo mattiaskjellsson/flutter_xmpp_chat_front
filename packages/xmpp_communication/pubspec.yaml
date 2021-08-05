@@ -6,4 +6,6 @@ environment:
   sdk: ">=2.12.0-0 <3.0.0"
 
 dependencies:
-  xmpp_stone: ^0.3.3
+  xmpp_stone: any
+  signal:
+    path: ../signal

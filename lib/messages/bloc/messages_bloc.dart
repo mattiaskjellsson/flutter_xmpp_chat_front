@@ -6,8 +6,6 @@ import 'package:equatable/equatable.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:xmpp_communication/xmpp_communication.dart';
 
-import './message.dart' as BlocMessage;
-
 part 'messages_event.dart';
 part 'messages_state.dart';
 
@@ -50,8 +48,8 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     add(NewMessagesEvent(m));
   }
 
-  send(String message) {
-    _xmppManager.sendMessage(message);
+  Future<void> send(String message) async {
+    await _xmppManager.sendMessage(message);
   }
 
   @override

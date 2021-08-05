@@ -89,10 +89,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _sendMessage() {
+  _sendMessage() async {
     if (edit.text.isNotEmpty) {
       final messageBloc = BlocProvider.of<MessagesBloc>(context);
-      messageBloc.send(edit.text);
+      await messageBloc.send(edit.text);
       edit.text = '';
       // scroll.animateTo(double.infinity,
       //     duration: Duration(milliseconds: 300), curve: Curves.bounceIn);

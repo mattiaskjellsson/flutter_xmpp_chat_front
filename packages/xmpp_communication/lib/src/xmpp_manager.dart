@@ -1,3 +1,4 @@
+import 'package:signal/signal.dart';
 import 'package:xmpp_communication/xmpp_communication.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
@@ -9,6 +10,9 @@ class XmppManager {
   late xmpp.MessageHandler _messageHandler;
   late ConnectionStateChangedListener _connectionStateChangedListener;
   late xmpp.PresenceManager _presenceManager;
+  late SignalManager _signalManager;
+
+  XmppManager({required signalManager}) : _signalManager = signalManager;
 
   MessagesListener get listener => _connectionStateChangedListener.listener;
 
@@ -23,7 +27,7 @@ class XmppManager {
     final connection = xmpp.Connection(account);
     connection.connect();
 
-    final messagesListener = MessagesListener();
+    final messagesListener = MessagesListener(signalManager: _signalManager);
 
     _connectionStateChangedListener =
         ConnectionStateChangedListener(connection, messagesListener, receiver);
@@ -38,14 +42,22 @@ class XmppManager {
 
     _receiverJid = xmpp.Jid.fromFullJid(receiver);
     _messageHandler = xmpp.MessageHandler.getInstance(connection);
+
+    _signalManager.install(
+        sender: _senderJid.userAtDomain, receiver: _receiverJid.userAtDomain);
   }
 
-  sendMessage(String text) {
+  Future<void> sendMessage(String text) async {
     if (text.isNotEmpty) {
-      _messageHandler.sendMessage(_receiverJid, text);
+      print('Text: $text');
+      final cypherText = await _signalManager.encryptMessage(text);
+      print(cypherText.toString());
+
+      _messageHandler.sendMessage(
+          _receiverJid, cypherText.serialize().toString());
 
       final m = xmpp.MessageStanza('', xmpp.MessageStanzaType.CHAT);
-      m.body = text;
+      m.body = cypherText.serialize().toString();
       m.fromJid = _senderJid;
       m.toJid = _receiverJid;
 

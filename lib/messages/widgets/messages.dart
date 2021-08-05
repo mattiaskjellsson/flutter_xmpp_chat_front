@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/messages/bloc/messages_bloc.dart';
-import 'package:user_repository/user_repository.dart';
 import './message.dart' as widget;
 
 class Messages extends StatefulWidget {

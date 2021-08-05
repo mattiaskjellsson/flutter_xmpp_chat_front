@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:xmpp_communication/src/message_listner.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 
 class ConnectionStateChangedListener
