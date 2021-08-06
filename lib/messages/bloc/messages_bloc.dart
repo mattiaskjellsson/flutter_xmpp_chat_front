@@ -33,11 +33,13 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
 
   authEvents(e) async {
     if (e == AuthenticationStatus.authenticated) {
+      final serverIp = '18.118.6.189';
       final user = await _userRepo.getUser();
-      final receiver = user.username == 'mattias'
-          ? 'mattias2@shakespeare.lit'
-          : 'mattias@shakespeare.lit';
-      _xmppManager.connect(user.username, user.password, '127.0.0.1', receiver);
+      print(user);
+      final receiver = user.username == 'ardian@localhost'
+          ? 'sean@localhost'
+          : 'ardian@localhost';
+      _xmppManager.connect(user.username, user.password, serverIp, receiver);
 
       _messageStreamSubscription =
           _xmppManager.listener.messageStream.listen((e) => messageHandler(e));

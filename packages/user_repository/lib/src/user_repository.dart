@@ -5,8 +5,12 @@ import 'package:uuid/uuid.dart';
 import './models/models.dart';
 
 List<User> _users = [
-  User(username: 'mattias', password: 'abc123', id: Uuid().v4()),
-  User(username: 'mattias2', password: 'abc123', id: Uuid().v4())
+  User(username: 'ardian@localhost', password: 'ard852', id: Uuid().v4()),
+  User(username: 'sean@localhost', password: 'sea679', id: Uuid().v4()),
+  User(
+      username: 'mattias@shakespeare.lit', password: 'abc123', id: Uuid().v4()),
+  User(
+      username: 'mattias2@shakespeare.lit', password: 'abc123', id: Uuid().v4())
 ];
 
 class UserRepository {

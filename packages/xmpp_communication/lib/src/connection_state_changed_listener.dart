@@ -63,7 +63,7 @@ class ConnectionStateChangedListener
 
   void onPresence(xmpp.PresenceData event) {
     print(
-        'presence Event from ${event.jid.fullJid} PRESENCE: ${event.showElement.toString()}');
+        'presence Event from ${event?.jid?.fullJid} PRESENCE: ${event?.showElement.toString()}');
   }
 
   void dispose() {

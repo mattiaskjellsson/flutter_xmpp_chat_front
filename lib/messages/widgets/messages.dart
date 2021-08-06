@@ -41,14 +41,6 @@ class _MessagesState extends State<Messages> {
   }
 
   messageIsFromMe(String from) {
-    final userAtDomain = from;
-    final indexOfAt = userAtDomain.indexOf('@');
-
-    if (indexOfAt > 0) {
-      final user = userAtDomain.substring(0, indexOfAt);
-      return user == me;
-    }
-
-    return false;
+    return from == me;
   }
 }
