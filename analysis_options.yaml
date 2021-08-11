@@ -1,0 +1,13 @@
+# include: package:lints/recommended.yaml
+
+# analyzer:
+#   exclude: [build/**, packages/**, .**, android/**, ios/**, web/**]
+
+#   language:
+#     strict-raw-types: true
+#   strong-mode:
+#     implicit-casts: false
+
+# linter:
+#   rules:
+#     always_use_package_imports: false

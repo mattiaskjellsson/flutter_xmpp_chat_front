@@ -40,7 +40,7 @@ class _MessagesState extends State<Messages> {
     );
   }
 
-  messageIsFromMe(String from) {
+  bool messageIsFromMe(String from) {
     return from == me;
   }
 }

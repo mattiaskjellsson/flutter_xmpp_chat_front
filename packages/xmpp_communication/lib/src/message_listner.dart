@@ -1,7 +1,4 @@
-import 'dart:typed_data';
-
 import 'package:xmpp_communication/xmpp_communication.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 import 'package:signal/signal.dart';
 import 'dart:async';
@@ -9,7 +6,8 @@ import 'dart:async';
 class MessagesListener implements xmpp.MessagesListener {
   final _streamController = StreamController<Message>();
   SignalManager _signalManager;
-  MessagesListener({signalManager}) : _signalManager = signalManager;
+  MessagesListener({required SignalManager signalManager})
+      : _signalManager = signalManager;
 
   Stream<Message> get messageStream async* {
     yield* _streamController.stream;

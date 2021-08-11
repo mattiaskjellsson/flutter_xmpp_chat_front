@@ -12,12 +12,12 @@ class XmppManager {
   late xmpp.PresenceManager _presenceManager;
   late SignalManager _signalManager;
 
-  XmppManager({required signalManager}) : _signalManager = signalManager;
+  XmppManager({required SignalManager signalManager})
+      : _signalManager = signalManager;
 
   MessagesListener get listener => _connectionStateChangedListener.listener;
 
   connect(String user, String password, String domain, String receiver) {
-    // final userAtDomain = '$user@$domain';
     _senderJid = xmpp.Jid.fromFullJid(user);
 
     final account = xmpp.XmppAccountSettings(
@@ -45,7 +45,8 @@ class XmppManager {
     _receiverJid = xmpp.Jid.fromFullJid(receiver);
     _messageHandler = xmpp.MessageHandler.getInstance(connection);
 
-    _signalManager.install(
+    _signalManager.install(username: _senderJid.userAtDomain);
+    _signalManager.buildSession(
         sender: _senderJid.userAtDomain, receiver: _receiverJid.userAtDomain);
   }
 

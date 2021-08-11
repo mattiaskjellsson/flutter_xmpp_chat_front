@@ -8,7 +8,7 @@ import 'package:xmpp_communication/xmpp_communication.dart';
 
 import 'package:frontend/messages/bloc/messages_bloc.dart';
 
-import 'AppView.dart';
+import 'app_view.dart';
 import 'authentication/bloc/authentication_bloc.dart';
 
 void main() {

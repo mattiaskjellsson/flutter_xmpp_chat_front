@@ -3,146 +3,127 @@ import 'dart:typed_data';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart'
     as libSignal;
 
+import 'key_server.dart';
+
 class SignalManager {
-  // late final _sessionChyper;
-  // libSignal.SessionCipher get sessionCipher => _sessionChyper;
+  int _generatePreKeyStart;
+  int _generatePreKeyCount;
 
-  late final generatePreKeyStart;
-  late final generatePreKeyCount;
-  late final signedKeyId;
-
-  late final String receiverName; // = 'bob';
-  late final int receiverDeviceId; // = 1;
-
-  late final libSignal.SessionCipher _sessionCipher;
-
-  // late final int registrationId;
-
-  late final String senderName; // = 'alice';
-  late final int senderDeviceId; // = 1;
-
-  late final remotePreKeyStart; // = 0;
-  late final remotePreKeyCount; // = 110;
-  late final remoteSignedPreKeyId; // = 0;
-
-  late final List<libSignal.PreKeyRecord> _preKeys;
-  late final int _registrationId;
   late final libSignal.IdentityKeyPair _identityKeyPair;
+  late int _registrationId;
+  late final List<libSignal.PreKeyRecord> _preKeys;
+  late final libSignal.SignedPreKeyRecord _signedPreKey;
 
-  late final int _remoteRegId;
-  late final List<libSignal.PreKeyRecord> _remotePreKeys;
-  late final libSignal.SignedPreKeyRecord _remoteSignedPreKey;
-  late final libSignal.IdentityKeyPair _remoteIdentityKeyPair;
+  late final libSignal.SessionBuilder _sessionBuilder;
+  late final libSignal.InMemoryPreKeyStore _preKeyStore;
+  late final libSignal.InMemorySignedPreKeyStore _signedPreKeyStore;
+  late final libSignal.InMemoryIdentityKeyStore _identityStore;
+
+  final KeyServer _keyServer = KeyServer();
+
+  late final libSignal.InMemorySessionStore _sessionStore;
+  late libSignal.SessionCipher _sessionCipher;
 
   SignalManager({
-    this.generatePreKeyStart = 0,
-    this.generatePreKeyCount = 110,
-    this.signedKeyId = 0,
-    // this.receiverName = 'bob',
-    this.receiverDeviceId = 1,
-    // this.registrationId = 1,
-    // this.senderName = 'alice',
-    this.senderDeviceId = 1,
-    this.remotePreKeyStart = 0,
-    this.remotePreKeyCount = 110,
-    this.remoteSignedPreKeyId = 0,
-  }) {
-    this._preKeys =
-        libSignal.generatePreKeys(generatePreKeyStart, generatePreKeyCount);
-    this._registrationId = libSignal.generateRegistrationId(false);
-    this._identityKeyPair = libSignal.generateIdentityKeyPair();
-  }
+    generatePreKeyStart = 0,
+    generatePreKeyCount = 110,
+  })  : _generatePreKeyStart = generatePreKeyStart,
+        _generatePreKeyCount = generatePreKeyCount;
 
-  Future<void> install({required sender, required receiver}) async {
-    senderName = sender;
-    receiverName = receiver;
+  Future<void> install({required String username}) async {
+    _identityKeyPair = libSignal.generateIdentityKeyPair();
+    _registrationId = libSignal.generateRegistrationId(false);
+    _preKeys =
+        libSignal.generatePreKeys(_generatePreKeyStart, _generatePreKeyCount);
+    _signedPreKey = libSignal.generateSignedPreKey(_identityKeyPair, 0);
 
-    final signedPreKey =
-        libSignal.generateSignedPreKey(_identityKeyPair, signedKeyId);
+    // Store _identityKeyPair somewhere durable and safe.
+    // Store _registrationId somewhere durable and safe.
+    await _keyServer.storeKey(KeyObject(
+      username: username,
+      identityKeyPair: _identityKeyPair.serialize().toString(),
+      deviceId: 1.toString(),
+      preKeyId: 0.toString(),
+      signedPreKeyId: 0.toString(),
+      preKey: _preKeys.first.serialize().toString(),
+      registrationId: _registrationId.toString(),
+    ));
 
-    final sessionStore = libSignal.InMemorySessionStore();
-    final preKeyStore = libSignal.InMemoryPreKeyStore();
-    final signedPreKeyStore = libSignal.InMemorySignedPreKeyStore();
-    final identityStore =
+    _sessionStore = libSignal.InMemorySessionStore();
+    _preKeyStore = libSignal.InMemoryPreKeyStore();
+    _signedPreKeyStore = libSignal.InMemorySignedPreKeyStore();
+
+    // Store preKeys in PreKeyStore.
+    _identityStore =
         libSignal.InMemoryIdentityKeyStore(_identityKeyPair, _registrationId);
 
-    for (var p in _preKeys) {
-      await preKeyStore.storePreKey(p.id, p);
+    for (final p in _preKeys) {
+      await _preKeyStore.storePreKey(p.id, p);
     }
 
-    await signedPreKeyStore.storeSignedPreKey(signedPreKey.id, signedPreKey);
-
-    final receiverAddress =
-        libSignal.SignalProtocolAddress(receiverName, receiverDeviceId);
-    final sessionBuilder = libSignal.SessionBuilder(sessionStore, preKeyStore,
-        signedPreKeyStore, identityStore, receiverAddress);
-
-    // Should get remote from the server
-    libSignal.PreKeyBundle retrievedPreKey = await getRemotePreKey();
-
-    await sessionBuilder.processPreKeyBundle(retrievedPreKey);
-
-    _sessionCipher = libSignal.SessionCipher(sessionStore, preKeyStore,
-        signedPreKeyStore, identityStore, receiverAddress);
+    // Store signed prekey in SignedPreKeyStore.
+    await _signedPreKeyStore.storeSignedPreKey(_signedPreKey.id, _signedPreKey);
   }
 
-  Future<libSignal.PreKeyBundle> getRemotePreKey() async {
-    _remoteRegId = libSignal.generateRegistrationId(false);
-    _remotePreKeys =
-        libSignal.generatePreKeys(remotePreKeyStart, remotePreKeyCount);
-    _remoteIdentityKeyPair = libSignal.generateIdentityKeyPair();
-    _remoteSignedPreKey = libSignal.generateSignedPreKey(
-        _remoteIdentityKeyPair, remoteSignedPreKeyId);
+  void buildSession({required String sender, required String receiver}) async {
+    final recipientId = libSignal.SignalProtocolAddress(receiver, 1);
 
-    final libSignal.PreKeyBundle retrievedPreKey = libSignal.PreKeyBundle(
-        _remoteRegId,
-        receiverDeviceId,
-        _remotePreKeys[0].id,
-        _remotePreKeys[0].getKeyPair().publicKey,
-        _remoteSignedPreKey.id,
-        _remoteSignedPreKey.getKeyPair().publicKey,
-        _remoteSignedPreKey.signature,
-        _remoteIdentityKeyPair.getPublicKey());
+    _sessionBuilder = libSignal.SessionBuilder(_sessionStore, _preKeyStore,
+        _signedPreKeyStore, _identityStore, recipientId);
 
-    return retrievedPreKey;
+    // Get key from server
+    final remoteKey = await _keyServer.fetchKey(receiver);
+
+    libSignal.IdentityKeyPair bobIdentityKeyPair =
+        libSignal.IdentityKeyPair.fromSerialized(
+            stringToList(remoteKey.identityKeyPair));
+
+    int bobRegistrationId = int.parse(remoteKey.registrationId); //1
+    int bobDeviceId = int.parse(remoteKey.deviceId);
+    int bobPreKeyId = int.parse(remoteKey.preKeyId); //1;
+    int bobSignedPreKeyId = int.parse(remoteKey.signedPreKeyId); //1;
+
+    libSignal.PreKeyRecord bobPreKey =
+        libSignal.PreKeyRecord.fromBuffer(stringToList(remoteKey.preKey));
+
+    libSignal.SignedPreKeyRecord bobSignedPreKey =
+        libSignal.generateSignedPreKey(_identityKeyPair, 0);
+
+    final libSignal.InMemoryIdentityKeyStore bobStore =
+        libSignal.InMemoryIdentityKeyStore(
+            bobIdentityKeyPair, bobRegistrationId);
+
+    libSignal.PreKeyBundle retreivedPreKey = libSignal.PreKeyBundle(
+        await bobStore.getLocalRegistrationId(),
+        bobDeviceId,
+        bobPreKeyId,
+        bobPreKey.getKeyPair().publicKey,
+        bobSignedPreKeyId,
+        bobSignedPreKey.getKeyPair().publicKey,
+        bobSignedPreKey.signature,
+        await bobStore
+            .getIdentityKeyPair()
+            .then((value) => value.getPublicKey()));
+
+    // Build a session with a PreKey retrieved from the server.
+    _sessionBuilder.processPreKeyBundle(retreivedPreKey);
+
+    _sessionCipher = libSignal.SessionCipher(_sessionStore, _preKeyStore,
+        _signedPreKeyStore, _identityStore, recipientId);
   }
 
-  Future<String> decryptMessage(
-    Uint8List text,
-  ) async {
-    final ciphertext = libSignal.SignalMessage.fromSerialized(text);
-    final signalProtocolStore = libSignal.InMemorySignalProtocolStore(
-        _remoteIdentityKeyPair, _registrationId);
-
-    final senderAddress =
-        libSignal.SignalProtocolAddress(senderName, senderDeviceId);
-
-    final remoteSessionCipher =
-        libSignal.SessionCipher.fromStore(signalProtocolStore, senderAddress);
-
-    for (var p in _remotePreKeys) {
-      await signalProtocolStore.storePreKey(p.id, p);
-    }
-
-    await signalProtocolStore.storeSignedPreKey(
-        _remoteSignedPreKey.id, _remoteSignedPreKey);
-
-    if (ciphertext.getType() == libSignal.CiphertextMessage.prekeyType) {
-      final plainText = await remoteSessionCipher
-          .decrypt(ciphertext as libSignal.PreKeySignalMessage);
-      return plainText.toString();
-    }
-
-    throw Exception('CiphertextMessage is of wrong type...');
+  Future<void> sendMessage(String text) async {
+    libSignal.CiphertextMessage message =
+        await _sessionCipher.encrypt(stringToList(text));
+    return await deliver(message.serialize());
   }
 
-  Future<libSignal.CiphertextMessage> encryptMessage(String clearText) async {
-    final ciphertext = await _sessionCipher
-        .encrypt(Uint8List.fromList(utf8.encode(clearText)));
+  Future<void> deliver(Uint8List message) async {
+    print(message);
+    return;
+  }
 
-    print(ciphertext);
-    print(ciphertext.serialize());
-
-    return ciphertext;
+  Uint8List stringToList(String str) {
+    return Uint8List.fromList(utf8.encode(str));
   }
 }

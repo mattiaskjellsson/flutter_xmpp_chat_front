@@ -8,37 +8,6 @@ environment:
 dependencies:
   libsignal_protocol_dart:
     path: ./../libsignal_protocol_dart
-  # protobuf: any
-  # convert: any
-  # crypto: any
-  # optional: any
-  # tuple: any
-  # fixnum: any
-  # collection: any
-  # # upgrade to pre-release of pointycastle to enable full websupport
-  # pointycastle: any
-  # ed25519_edwards: any
-  # x25519: any
-  # very_good_analysis: any
+  http: ^0.13.3
 
 dev_dependencies:
-  # test: any
-  # pedantic: any
-
-#   protobuf: ^2.0.0
-#   convert: ^3.0.0
-#   crypto: ^3.0.1
-#   optional: ^6.0.0-nullsafety.2
-#   tuple: ^2.0.0
-#   fixnum: ^1.0.0
-#   collection: ^1.15.0
-#   # upgrade to pre-release of pointycastle to enable full websupport
-#   pointycastle: ^3.2.0-rc0
-#   ed25519_edwards: ^0.2.0
-#   x25519: ^0.0.2
-#   very_good_analysis: ^2.1.0
-
-
-# dev_dependencies:
-#   test: ^1.16.5 
-#   pedantic: ^1.11.0

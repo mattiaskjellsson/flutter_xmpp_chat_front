@@ -9,9 +9,8 @@ import 'messages/widgets/messages.dart';
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => HomePage());
-  }
+  static Route<dynamic> route() =>
+      MaterialPageRoute<void>(builder: (_) => HomePage());
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -25,9 +24,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   initState() {
-    scroll = new ScrollController();
+    scroll = ScrollController();
 
-    edit = new TextEditingController();
+    edit = TextEditingController();
     super.initState();
   }
 

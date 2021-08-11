@@ -9,7 +9,7 @@ abstract class MessagesEvent extends Equatable {
 }
 
 class NewMessagesEvent extends MessagesEvent {
-  NewMessagesEvent(message) : super(message);
+  NewMessagesEvent(Message message) : super(message);
 
   @override
   List<Object> get props => [message];

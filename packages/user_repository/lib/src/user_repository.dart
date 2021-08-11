@@ -14,14 +14,14 @@ List<User> _users = [
 ];
 
 class UserRepository {
-  User? _user;
+  late User _user;
 
   void setUser(String username) {
     _user = _users.where((element) => element.username == username).first;
   }
 
-  Future<User?> getUser() async {
-    if (_user != null) {
+  Future<User> getUser() async {
+    if (_user.username.isNotEmpty) {
       return _user;
     }
 

@@ -6,7 +6,7 @@ import 'package:frontend/login/bloc/login_bloc.dart';
 import 'login_form.dart';
 
 class LoginPage extends StatelessWidget {
-  static Route route() {
+  static Route<dynamic> route() {
     return MaterialPageRoute<void>(builder: (_) => LoginPage());
   }
 

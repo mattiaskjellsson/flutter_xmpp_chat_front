@@ -13,9 +13,9 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   late StreamSubscription<AuthenticationStatus> _authStreamSubscription;
   late StreamSubscription<Message> _messageStreamSubscription;
 
-  final _userRepo;
-  final _xmppManager;
-  final _authRepo;
+  final UserRepository _userRepo;
+  final XmppManager _xmppManager;
+  final AuthenticationRepository _authRepo;
 
   UserRepository get userRepository => _userRepo;
 
@@ -28,15 +28,15 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
         _authRepo = authenticationRepository,
         super(MessagesStateInitial()) {
     _authStreamSubscription = _authRepo.status
-        .listen((authenticationStatus) => authEvents(authenticationStatus));
+        .listen((AuthenticationStatus status) => authEvents(status));
   }
 
-  authEvents(e) async {
+  authEvents(AuthenticationStatus e) async {
     if (e == AuthenticationStatus.authenticated) {
-      final serverIp = '18.118.6.189';
-      final user = await _userRepo.getUser();
+      final String serverIp = '18.118.6.189';
+      final User user = await _userRepo.getUser();
       print(user);
-      final receiver = user.username == 'ardian@localhost'
+      final String receiver = user.username == 'ardian@localhost'
           ? 'sean@localhost'
           : 'ardian@localhost';
       _xmppManager.connect(user.username, user.password, serverIp, receiver);

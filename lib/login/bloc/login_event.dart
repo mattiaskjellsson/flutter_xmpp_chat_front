@@ -8,7 +8,7 @@ abstract class LoginEvent extends Equatable {
 }
 
 class LoginUsernameChanged extends LoginEvent {
-  final username;
+  final String username;
   const LoginUsernameChanged(this.username);
 
   @override
