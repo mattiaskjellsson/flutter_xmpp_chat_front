@@ -16,7 +16,8 @@ class KeyServer {
   }
 
   Future<void> storeKey(KeyObject ko) async {
-    final response = await http.post(Uri.parse(SERVER_URL + ko.username));
+    final response =
+        await http.post(Uri.parse(SERVER_URL + ko.username), body: ko.toJson());
 
     if (response == 200) {
       return;
@@ -55,5 +56,17 @@ class KeyObject {
       preKey: json['preKey'],
       registrationId: json['registrationId'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'username': username,
+      'identityKeyPair': identityKeyPair,
+      'deviceId': deviceId,
+      'preKeyId': preKeyId,
+      'signedPreKeyId': signedPreKeyId,
+      'preKey': preKey,
+      'registrationId': registrationId,
+    };
   }
 }

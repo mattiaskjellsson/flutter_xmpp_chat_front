@@ -112,15 +112,17 @@ class SignalManager {
         _signedPreKeyStore, _identityStore, recipientId);
   }
 
-  Future<void> sendMessage(String text) async {
-    libSignal.CiphertextMessage message =
-        await _sessionCipher.encrypt(stringToList(text));
-    return await deliver(message.serialize());
+  Future<String> encryptMessage(String text) async {
+    final m = await _sessionCipher.encrypt(stringToList(text));
+    return m.serialize().toString();
   }
 
-  Future<void> deliver(Uint8List message) async {
-    print(message);
-    return;
+  Future<String> decryptMessage(String text) async {
+    Uint8List l = stringToList(text);
+    libSignal.SignalMessage k = libSignal.SignalMessage.fromSerialized(l);
+    final f = await _sessionCipher.decryptFromSignal(k);
+    final g = utf8.decode(f, allowMalformed: true);
+    return g;
   }
 
   Uint8List stringToList(String str) {

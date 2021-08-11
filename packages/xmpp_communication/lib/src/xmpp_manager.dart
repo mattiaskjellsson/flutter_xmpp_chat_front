@@ -54,7 +54,8 @@ class XmppManager {
     if (text.isNotEmpty) {
       print('Text: $text');
 
-      _messageHandler.sendMessage(_receiverJid, text);
+      final f = await _signalManager.encryptMessage(text);
+      _messageHandler.sendMessage(_receiverJid, f);
 
       final m = xmpp.MessageStanza('', xmpp.MessageStanzaType.CHAT);
       m.body = text;
