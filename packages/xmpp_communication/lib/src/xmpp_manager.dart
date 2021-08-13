@@ -17,7 +17,7 @@ class XmppManager {
 
   MessagesListener get listener => _connectionStateChangedListener.listener;
 
-  connect(String user, String password, String domain, String receiver) {
+  connect(String user, String password, String domain, String receiver) async {
     _senderJid = xmpp.Jid.fromFullJid(user);
 
     final account = xmpp.XmppAccountSettings(
@@ -45,8 +45,8 @@ class XmppManager {
     _receiverJid = xmpp.Jid.fromFullJid(receiver);
     _messageHandler = xmpp.MessageHandler.getInstance(connection);
 
-    _signalManager.install(username: _senderJid.userAtDomain);
-    _signalManager.buildSession(
+    await _signalManager.install(username: _senderJid.userAtDomain);
+    await _signalManager.buildSession(
         sender: _senderJid.userAtDomain, receiver: _receiverJid.userAtDomain);
   }
 

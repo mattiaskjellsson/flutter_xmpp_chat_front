@@ -25,10 +25,6 @@ class ConnectionStateChangedListener
         _receiver = receiver {
     xmpp.Log.logLevel = xmpp.LogLevel.VERBOSE;
     xmpp.Log.logXmpp = true;
-
-    // _connection = connection;
-    // _messagesListener = messagesListener;
-    // _receiver = receiver;
     _connection.connectionStateStream.listen(onConnectionStateChanged);
   }
 
@@ -37,16 +33,9 @@ class ConnectionStateChangedListener
     print(state);
 
     if (state == xmpp.XmppConnectionState.Ready) {
-      // final vCardManager = xmpp.VCardManager(_connection);
-      // vCardManager.getSelfVCard().then((vCard) {
-      //   print('Your info ${vCard.buildXmlString()}');
-      // });
-
       _messageHandler = xmpp.MessageHandler.getInstance(_connection);
       _rosterManager = xmpp.RosterManager.getInstance(_connection);
       _messageHandler.messagesStream.listen(_messagesListener.onNewMessage);
-
-      // sleep(const Duration(seconds: 1));
 
       final receiverJid = xmpp.Jid.fromFullJid(_receiver);
 
@@ -69,9 +58,5 @@ class ConnectionStateChangedListener
   void dispose() {
     _subscription.cancel();
     _connection.close();
-
-    // _presenceManager?.close();
-    // _rosterManager?.dispose();
-    // _messageHandler?.close();
   }
 }

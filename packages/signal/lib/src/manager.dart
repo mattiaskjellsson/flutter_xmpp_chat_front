@@ -65,7 +65,8 @@ class SignalManager {
     await _signedPreKeyStore.storeSignedPreKey(_signedPreKey.id, _signedPreKey);
   }
 
-  void buildSession({required String sender, required String receiver}) async {
+  Future<void> buildSession(
+      {required String sender, required String receiver}) async {
     final recipientId = libSignal.SignalProtocolAddress(receiver, 1);
 
     _sessionBuilder = libSignal.SessionBuilder(_sessionStore, _preKeyStore,

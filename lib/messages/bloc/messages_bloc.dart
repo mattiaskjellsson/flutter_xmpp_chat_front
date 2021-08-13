@@ -42,11 +42,12 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       //     ? 'sean@localhost'
       //     : 'ardian@localhost';
 
-      final String receiver = user.username == 'mattias'
+      final String receiver = user.username == 'mattias@shakespeare.lit'
           ? 'mattias2@shakespeare.lit'
           : 'mattias@shakespeare.lit';
 
-      _xmppManager.connect(user.username, user.password, serverIp, receiver);
+      await _xmppManager.connect(
+          user.username, user.password, serverIp, receiver);
 
       _messageStreamSubscription =
           _xmppManager.listener.messageStream.listen((e) => messageHandler(e));

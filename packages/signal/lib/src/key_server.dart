@@ -8,7 +8,7 @@ class KeyServer {
   Future<KeyObject> fetchKey(String name) async {
     final response = await http.get(Uri.parse(SERVER_URL + name));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
       return KeyObject.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load Key');
@@ -16,10 +16,15 @@ class KeyServer {
   }
 
   Future<void> storeKey(KeyObject ko) async {
-    final response =
-        await http.post(Uri.parse(SERVER_URL + ko.username), body: ko.toJson());
+    final send = jsonEncode(ko.toJson());
+    final send2 = '{"keys":' + send + '}';
+    final response = await http.post(Uri.parse(SERVER_URL + ko.username),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: send2);
 
-    if (response == 200) {
+    if (response.statusCode == 201) {
       return;
     } else {
       throw Exception('Something dumb happened');
@@ -58,15 +63,15 @@ class KeyObject {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, String> toJson() {
     return {
-      'username': username,
-      'identityKeyPair': identityKeyPair,
-      'deviceId': deviceId,
-      'preKeyId': preKeyId,
-      'signedPreKeyId': signedPreKeyId,
-      'preKey': preKey,
-      'registrationId': registrationId,
+      'username': username.toString(),
+      'identityKeyPair': identityKeyPair.toString(),
+      'deviceId': deviceId.toString(),
+      'preKeyId': preKeyId.toString(),
+      'signedPreKeyId': signedPreKeyId.toString(),
+      'preKey': preKey.toString(),
+      'registrationId': registrationId.toString(),
     };
   }
 }
